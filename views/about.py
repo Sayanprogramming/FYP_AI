@@ -28,3 +28,4 @@ def show():
         st.markdown("<div class='card' style='background-color: brown;'><h5 class='center'>Sayan Sadhu</h5><p class='center'>AI Developer</p></div>", unsafe_allow_html=True)
 
     st.markdown("---\n> *Empowering smarter health decisions through technology.*")
+

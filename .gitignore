@@ -1,3 +1,4 @@
 .env/
 venv/
 views/__pycache__/
+llm_model/__pycache__/

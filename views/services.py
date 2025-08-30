@@ -1,45 +1,116 @@
-# views/services.py
 import streamlit as st
-
-def simple_rule_predict(symptoms, severity):
-
-    s = set(symptoms)
-
-    if {"fever", "cough"}.issubset(s):
-        return "Possible: Flu/COVID-like illness — consult a physician."
-    if "shortness of breath" in s:
-        return "Urgent: Shortness of breath flagged — seek immediate care!"
-    if "headache" in s and len(s) == 1:
-        return "Possible: Tension/migraine — monitor and consult if persists."
-    if len(s) == 0:
-        return "Please select symptoms so the model can suggest next steps."
-    
-    return "General Advice: Monitor symptoms, rest, hydrate, consult a doctor if it worsens."
-
-
+from llm_model.gemini_service import ask_gemini
 
 
 
 def show():
-    st.header("Our Services")
-    st.markdown("""
-    ### 🔍 Symptom Checker
-    Enter your symptoms and get smart AI-based predictions (demo).
-    """)
-    with st.form("symptom_form"):
-        symptoms = st.multiselect(
-            "Select symptoms (demo)",
-            ["fever", "cough", "headache", "fatigue", "sore throat", "runny nose", "shortness of breath"]
-        )
-        severity = st.slider("Overall severity (1-10)", 1, 10, 3)
-        submitted = st.form_submit_button("Predict")
-        if submitted:
-            prediction = simple_rule_predict(symptoms, severity)
 
-            st.warning(prediction)
-            st.write(f"Symptoms: {symptoms} — Severity {severity}")
+    
+    st.markdown(
+        """
+        <style>
+        /* Page background */
+        .stApp {
+            background-color: #0f111a;
+            color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Header */
+        .header-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ff6f91;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Subheader/info box */
+        .header-subtitle {
+            font-size: 18px;
+            text-align: center;
+            color: #f0f0f0;
+            background-color: royalblue;
+            padding: 15px 20px;
+            border-radius: 12px;
+            max-width: 900px;
+            margin: 0 auto 20px auto;
+            line-height: 1.6;
+        }
+
+        /* Separator */
+        .separator {
+            border-top: 1px solid #333;
+            margin: 20px 0;
+        }
+        .chatInfo {
+            font-size: 1rem;
+            color: #888;
+            text-align: center;
+            margin-top: 20px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.set_page_config(page_title="AI Patient Health Suggestor", page_icon="💬")
 
 
-    st.markdown("### 📅 Appointment Scheduling\nSeamless booking (placeholder).")
-    st.markdown("### 📂 Health Record Management\nSecure storage and retrieval (placeholder).")
-    st.success("More production-ready features coming soon (model integration, db, auth).")
+    st.markdown('<div class="header-title">💖 AI Patient Health Suggestor</div>', unsafe_allow_html=True)
+
+    st.markdown(
+    '<div class="header-subtitle">'
+    'Get personalized health insights instantly with our AI-powered health assistant, '
+    'designed to provide smart, reliable, and user-friendly support for better wellness decisions.'
+    '</div>',
+    unsafe_allow_html=True
+    )
+
+    st.markdown("---")
+
+
+
+    #------------------- CHAT MODEL INTEGRATION -------------------
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+
+    
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+
+    if prompt := st.chat_input("What would you like to talk about?"):
+
+        st.session_state.messages.append({
+            "role": "user",
+            "content": prompt
+        })
+
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+
+        # creating a payload baby
+        payload = [
+            {
+                "role" : msg["role"],
+                "content": msg["content"]
+            }
+            for msg in st.session_state.messages
+        ]
+        
+        # creating payload
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking..."):
+                model_response = ask_gemini(prompt)
+                st.markdown(model_response)
+    
+        st.session_state.messages.append({"role": "assistant", "content": model_response})
+    if st.session_state.messages:
+        st.button("Clear Chat", on_click=lambda: st.session_state.messages.clear())
+    else:
+        st.markdown("<div class='chatInfo'>No messages yet...</div>", unsafe_allow_html=True)

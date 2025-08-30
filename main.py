@@ -1,5 +1,6 @@
 # main.py
 import streamlit as st
+from time import sleep
 from views import utils, home, services, about, contact, footer
 
 
@@ -19,6 +20,7 @@ def sync_from_sidebar():
 if __name__ == "__main__":
 
     # ---- Page configuration ----
+
     st.set_page_config(
         page_title="Mediwise",
         page_icon="🩺",
@@ -69,16 +71,19 @@ if __name__ == "__main__":
 
     if current_page == "🏠 Home":
         home.show()
+        footer.show()
+        st.snow()
     elif current_page == "🧪 Services":
         services.show()
     elif current_page == "📖 About":
         about.show()
+        footer.show()
     elif current_page == "📞 Contact":
         contact.show()
+        footer.show()
     else:
         st.error("Page not found.")
 
 
-    # ---- Footer ----
-    footer.show()
+   
     
