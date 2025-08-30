@@ -32,7 +32,7 @@ def ask_gemini(prompt):
                 If you do not have enough information to provide a recommendation, you should say "Give me more details like...". Also you will answer in a 
                 concise manner and avoid unnecessary information.
 
-                Important: You will answer only if the questions are related to the health domain.
+                Important: You will answer only if the questions are related to the health domain. and remember my name and try to use it in your responses sometimes.
             """,
         ),
         contents=prompt

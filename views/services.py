@@ -87,7 +87,7 @@ def show():
 
         st.session_state.messages.append({
             "role": "user",
-            "content": prompt
+            "content": prompt + "Note: Below I provide the context of previous conversation"
         })
 
         with st.chat_message("user"):
@@ -95,18 +95,24 @@ def show():
 
 
         # creating a payload baby
-        payload = [
-            {
-                "role" : msg["role"],
-                "content": msg["content"]
-            }
-            for msg in st.session_state.messages
-        ]
+        payload = ""
+        for msg in st.session_state.messages:
+            payload += f"{msg['role'].capitalize()}: {msg['content']}\n"
+
         
-        # creating payload
+        # payload = [
+        #     {
+        #         "role" : msg["role"],
+        #         "content": msg["content"]
+        #     }
+        #     for msg in st.session_state.messages
+        # ]
+
+
+        # model operation
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                model_response = ask_gemini(prompt)
+                model_response = ask_gemini(payload)
                 st.markdown(model_response)
     
         st.session_state.messages.append({"role": "assistant", "content": model_response})
