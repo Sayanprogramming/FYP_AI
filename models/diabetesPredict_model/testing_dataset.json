@@ -1,0 +1,80 @@
+[
+  {
+     "Pregnancies": 6,
+    "Glucose": 148,
+    "BloodPressure": 72,
+    "SkinThickness": 35,
+    "Insulin": 200,
+    "BMI": 33.6,
+    "Age": 50
+  },
+  {
+    "Pregnancies": 8,
+    "Glucose": 183,
+    "BloodPressure": 90,
+    "SkinThickness": 32,
+    "Insulin": 250,
+    "BMI": 37.5,
+    "Age": 58
+  },
+  {
+    "Pregnancies": 5,
+    "Glucose": 155,
+    "BloodPressure": 80,
+    "SkinThickness": 40,
+    "Insulin": 180,
+    "BMI": 36.0,
+    "Age": 45,
+    "Outcome": 1
+  },
+  {
+    "Pregnancies": 7,
+    "Glucose": 165,
+    "BloodPressure": 85,
+    "SkinThickness": 38,
+    "Insulin": 210,
+    "BMI": 34.2,
+    "Age": 53,
+    "Outcome": 1
+  },
+  {
+    "Pregnancies": 9,
+    "Glucose": 170,
+    "BloodPressure": 88,
+    "SkinThickness": 42,
+    "Insulin": 300,
+    "BMI": 39.1,
+    "Age": 60,
+    "Outcome": 1
+  },
+  {
+    "Pregnancies": 1,
+    "Glucose": 85,
+    "BloodPressure": 66,
+    "SkinThickness": 29,
+    "Insulin": 70,
+    "BMI": 26.6,
+    "Age": 31,
+    "Outcome": 0
+  },
+  {
+    "Pregnancies": 0,
+    "Glucose": 108,
+    "BloodPressure": 68,
+    "SkinThickness": 20.54,
+    "Insulin": 79.80,
+    "BMI": 29.50,
+    "Age": 21,
+    "Outcome": 0
+  },
+  {
+    "Pregnancies": 0,
+    "Glucose": 120,
+    "BloodPressure": 68,
+    "SkinThickness": 20.54,
+    "Insulin": 79.80,
+    "BMI": 32.5,
+    "Age": 21,
+    "Outcome": 0
+  }
+]
