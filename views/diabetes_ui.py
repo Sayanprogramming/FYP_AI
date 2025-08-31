@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from controllers import diabetes_services
+from llm_model import model_service
 
 
 def show_ui():
@@ -40,7 +41,7 @@ def show_ui():
 
         submit_button = st.form_submit_button("Submit Patient Info")
 
-        # now if submitted
+    # now if submitted
         if submit_button:
 
             st.toast("Patient information submitted successfully!")
@@ -65,6 +66,10 @@ def show_ui():
                 user_input_df = pd.DataFrame([inp_dict])
 
                 response = diabetes_services.predict_disease(user_input_df)
+                
+                format_prompt = f"The patient has a {'high' if response[0] == 1 else 'low'} risk of diabetes with a probability of {response[1]:.2f}."
+                model_res = model_service.ask_model(name, age, "diabetes", format_prompt, symptoms)
+
 
             prediction, probability = response
 
@@ -74,3 +79,7 @@ def show_ui():
                 st.success(f"Low risk of diabetes detected. (Probability: {probability:.2f})")
 
             st.toast("Prediction completed!")
+
+
+            st.markdown("### 🩺 Model Response")
+            st.write(model_res)
