@@ -1,0 +1,16 @@
+{
+  "Age": 49,
+  "Gender": 1,
+  "Smoking": 1,
+  "Alcohol": 1,
+  "Exercise (per week)": 0,
+  "Diet Quality": 2,
+  "Overweight": 1,
+  "Stress Level": 8,
+  "Blood Pressure": 132,
+  "Cholesterol": 231,
+  "Family History": 0,
+  "Chest Pain": 1,
+  "Shortness of Breath": 0,
+  "Diabetes": 0
+}

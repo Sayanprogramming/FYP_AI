@@ -1,7 +1,7 @@
 import streamlit as st
 from llm_model.gemini_service import ask_gemini
 import views.diabetes_ui as diabetes_ui
-
+import views.heart_ui as heart_ui
 
 
 def show():
@@ -121,7 +121,7 @@ def show():
         # st.session_state.selected_model = "Heart Disease Prediction"
 
         # Add heart disease prediction UI
-        pass
+        heart_ui.show_ui()
 
     elif selected_model == "Cancer Prediction":
         # st.session_state.selected_model = "Cancer Prediction"
