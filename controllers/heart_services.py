@@ -1,13 +1,16 @@
+import os #added for relative paths
 import pandas as pd
 import joblib
+# Get the base directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SCALER_PATH = "C:/Users/sayan/OneDrive/Desktop/FYP_AI/models/heart disease_pred_model/heart_scaler.joblib"
-MODEL_PATH = "C:/Users/sayan/OneDrive/Desktop/FYP_AI/models/heart disease_pred_model/heart_model.joblib"
+SCALER_PATH = os.path.join(BASE_DIR, "models", "heart disease_pred_model", "heart_scaler.joblib")
+MODEL_PATH  = os.path.join(BASE_DIR, "models", "heart disease_pred_model", "heart_model.joblib")
 
+# Load model and scaler
 scaler = joblib.load(SCALER_PATH)
 model = joblib.load(MODEL_PATH)
 
-# Make sure the order of features matches training
 FEATURE_ORDER = [
     "Age","Gender","Smoking","Alcohol","Exercise (per week)","Diet Quality",
     "Overweight","Stress Level","Blood Pressure","Cholesterol",
