@@ -2,6 +2,3 @@
 venv/
 views/__pycache__/
 llm_model/__pycache__/
-.streamlit/secrets.toml
-__pycache__/
-*.pyc
