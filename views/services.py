@@ -216,8 +216,7 @@ def show():
         "💬 General Health Assessment",
         "🧠 Diabetes Prediction",
         "❤️ Heart Disease Prediction",
-        "🔬 Cancer Prediction",
-        "🍲 Stomach Issues Prediction"
+        "🎗️ Breast Cancer Detection",
     ]
     selected_model = st.sidebar.selectbox("Select a service:", model_options)
 
@@ -264,38 +263,20 @@ def show():
     elif "Heart Disease" in selected_model:
         heart_ui.show_ui()
 
-    elif "Cancer" in selected_model:
+    elif "Breast Cancer" in selected_model:
         st.markdown("""
         <div class="coming-soon-card">
-            <span class="cs-icon">🔬</span>
-            <div class="cs-title">Oncology Classifier</div>
-            <div class="cs-status">Under Training (Epoch 74/150)</div>
+            <span class="cs-icon">🎗️</span>
+            <div class="cs-title">Breast Cancer Detection</div>
+            <div class="cs-status">Model Ready · Integration Pending</div>
             <div class="cs-desc">
-                We are developing a high-precision convolutional neural network targeting tumor classification.
-                Model weights and interactive input matrices will be made available upon completion.
+                A CNN-based deep learning model trained to detect breast cancer from medical images.
+                The model is ready — full UI integration with image upload is coming shortly.
             </div>
             <div class="cs-features">
-                <span class="cs-feat-tag">CNNs</span>
-                <span class="cs-feat-tag">ResNet</span>
-                <span class="cs-feat-tag">Image & Bio-Data</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    elif "Stomach Issues" in selected_model:
-        st.markdown("""
-        <div class="coming-soon-card">
-            <span class="cs-icon">🍲</span>
-            <div class="cs-title">Gastrointestinal Predictor</div>
-            <div class="cs-status">Planned Feature</div>
-            <div class="cs-desc">
-                An interactive classifier designed to trace digestive patterns and stomach symptoms.
-                Our backend engineers are currently mapping the relevant feature categories.
-            </div>
-            <div class="cs-features">
-                <span class="cs-feat-tag">Tabular Classification</span>
-                <span class="cs-feat-tag">Gradient Boosting</span>
-                <span class="cs-feat-tag">Symptom Mapping</span>
+                <span class="cs-feat-tag">CNN</span>
+                <span class="cs-feat-tag">Image Classification</span>
+                <span class="cs-feat-tag">Deep Learning</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
