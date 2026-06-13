@@ -3,9 +3,12 @@ import joblib
 import os
 import pandas as pd
 
+# Get the base directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # Load scaler and model
-scaler = joblib.load("./models/diabetesPredict_model/diabetes_scaler.joblib")
-model = joblib.load("./models/diabetesPredict_model/diabetes_model.joblib")
+scaler = joblib.load(os.path.join(BASE_DIR, "models", "diabetesPredict_model", "diabetes_scaler.joblib"))
+model = joblib.load(os.path.join(BASE_DIR, "models", "diabetesPredict_model", "diabetes_model.joblib"))
 
 
 

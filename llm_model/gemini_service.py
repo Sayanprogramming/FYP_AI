@@ -1,16 +1,14 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 
-# Configure API
-genai.configure(api_key=st.secrets["LLM_API_KEY"])
-
-# Create model
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Initialize the client
+client = genai.Client(api_key=st.secrets["LLM_API_KEY"])
 
 def ask_gemini(prompt):
     try:
-        response = model.generate_content(
-            f"""
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=f"""
             You are an AI-powered health assistant.
 
             Rules:
