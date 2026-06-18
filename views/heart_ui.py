@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from controllers import heart_services
 from llm_model import model_service
+from utils.prescription_service import send_prescription_email, generate_pdf_bytes
+
 
 
 def show_ui():
@@ -86,6 +88,16 @@ def show_ui():
                 )
                 model_res = model_service.ask_model(name, age, "heart disease", format_prompt, symptoms)
 
+                # Store results in session state so prescription section can access them
+                st.session_state["heart_result"] = {
+                    "name": name,
+                    "age": age,
+                    "prediction": response[0],
+                    "probability": response[1],
+                    "format_prompt": format_prompt,
+                    "model_res": model_res,
+                }
+
             # Display prediction
             prediction, probability = response
 
@@ -98,3 +110,62 @@ def show_ui():
 
             st.markdown("### 🧑‍⚕️ Model Response")
             st.write(model_res)
+
+    # ── Prescription Section (shown after prediction) ──────────────────────────
+    if "heart_result" in st.session_state:
+        res = st.session_state["heart_result"]
+
+        st.markdown("---")
+        st.markdown("### 📋 Prescription Actions")
+
+        col_dl, col_mail = st.columns(2)
+
+        # ── Download Button ──────────────────────────────────────────────────
+        with col_dl:
+            pdf_bytes = generate_pdf_bytes(
+                patient_name=res["name"],
+                age=res["age"],
+                disease="Heart Disease",
+                prediction_summary=res["format_prompt"],
+                prescription_text=res["model_res"],
+            )
+            st.download_button(
+                label="⬇️ Download Prescription PDF",
+                data=pdf_bytes,
+                file_name=f"Prescription_HeartDisease_{res['name'].replace(' ', '_')}.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+            )
+
+        # ── Email Button ─────────────────────────────────────────────────────
+        with col_mail:
+            if st.button("📩 Send to Email", use_container_width=True, key="heart_email_btn"):
+                st.session_state["heart_show_email_form"] = True
+
+        if st.session_state.get("heart_show_email_form"):
+            with st.form("heart_email_form"):
+                user_email = st.text_input(
+                    "Patient's Email Address",
+                    placeholder="example@gmail.com",
+                    key="heart_email_input",
+                )
+                send_btn = st.form_submit_button("🚀 Send PDF Now")
+
+                if send_btn:
+                    if user_email:
+                        with st.spinner("Generating PDF and sending email..."):
+                            try:
+                                send_prescription_email(
+                                    recipient_email=user_email,
+                                    patient_name=res["name"],
+                                    age=res["age"],
+                                    disease="Heart Disease",
+                                    prediction_summary=res["format_prompt"],
+                                    prescription_text=res["model_res"],
+                                )
+                                st.success(f"✅ Prescription sent successfully to **{user_email}**!")
+                                st.session_state["heart_show_email_form"] = False
+                            except Exception as e:
+                                st.error(f"❌ Failed to send email: {e}")
+                    else:
+                        st.warning("⚠️ Please enter a valid email address.")
