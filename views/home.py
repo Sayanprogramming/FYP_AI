@@ -343,7 +343,7 @@ def show():
         ("🧠", "Diabetes Prediction", "Advanced ML model analyses your health metrics to assess diabetes risk with high precision.", "ML · XGBoost"),
         ("❤️", "Heart Disease Detection", "Predict cardiovascular disease risk using clinical parameters and AI-driven analysis.", "ML · Random Forest"),
         ("💬", "General Health Support", "Chat with our expert AI health assistant for personalized wellness guidance and health tips.", "AI · Gemini 2.5"),
-        ("🎗️", "Breast Cancer Detection", "Detect breast cancer through AI-powered analysis of medical images using deep learning.", "CNN · Image AI"),
+        ("🩸", "Blood Cancer Detection", "Detect blood cancer through AI-powered analysis of medical images using deep learning.", "CNN · Image AI"),
     ]
 
     col_a, col_b = st.columns(2)
@@ -379,10 +379,10 @@ def show():
     st.markdown('<div class="section-title">👥 Contributors</div>', unsafe_allow_html=True)
 
     contributors = [
-        ("A", "Arijit Chowdhury", "Data Scientist"),
-        ("D", "Debarati Chaudhuri", "UI/UX Designer"),
-        ("J", "Joymalya Dey", "Backend Engineer"),
-        ("S", "Sayan Sadhu", "AI Developer"),
+        ("A", "Arijit Chowdhury", "Software Developer"),
+        ("D", "Debarati Chaudhuri", "Frontend Developer"),
+        ("J", "Joymalya Dey", "Backend Developer"),
+        ("S", "Sayan Sadhu", "Machine Learning Engineer"),
     ]
 
     cc1, cc2, cc3, cc4 = st.columns(4)

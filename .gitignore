@@ -2,5 +2,10 @@
 venv/
 views/__pycache__/
 llm_model/__pycache__/
+controllers/__pycache__/
 .streamlit/secrets.toml
 *.pyc
+
+# Blood cancer model - large files
+models/blood cancer_model/dataset/
+models/blood cancer_model/*.pth

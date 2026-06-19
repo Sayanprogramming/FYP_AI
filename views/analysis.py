@@ -158,10 +158,16 @@ def show():
     with col2:
         selected_model = st.selectbox(
             "🔍 Select Model:", 
-            ["Diabetes Prediction", "Heart Disease Prediction"],
+            ["Diabetes Prediction", "Heart Disease Prediction", "Blood Cancer Detection"],
             key="model_select"
         )
-    model_key = "diabetes" if selected_model == "Diabetes Prediction" else "heart"
+    
+    if selected_model == "Diabetes Prediction":
+        model_key = "diabetes"
+    elif selected_model == "Heart Disease Prediction":
+        model_key = "heart"
+    else:
+        model_key = "blood_cancer"
     
     # ── QUICK MODEL STATUS INDICATOR ────────────────────────────────────────
     col1, col2, col3, col4 = st.columns(4)
@@ -176,29 +182,32 @@ def show():
         """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("""
+        alg = "Random Forest" if model_key == "diabetes" else ("XGBoost" if model_key == "heart" else "ResNet-18 CNN")
+        st.markdown(f"""
         <div style='background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); 
                     padding: 15px; border-radius: 8px; text-align: center; color: white;'>
             <strong>📦 Algorithm</strong><br>
-            <span style='font-size: 16px;'>""" + ("Random Forest" if model_key == "diabetes" else "XGBoost") + """</span>
+            <span style='font-size: 16px;'>{alg}</span>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
-        st.markdown("""
+        purp = "Diabetes" if model_key == "diabetes" else ("Heart" if model_key == "heart" else "Blood Cancer")
+        st.markdown(f"""
         <div style='background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); 
                     padding: 15px; border-radius: 8px; text-align: center; color: white;'>
             <strong>🎯 Purpose</strong><br>
-            <span style='font-size: 16px;'>""" + ("Diabetes" if model_key == "diabetes" else "Heart") + """ Risk</span>
+            <span style='font-size: 16px;'>{purp} Risk</span>
         </div>
         """, unsafe_allow_html=True)
     
     with col4:
-        st.markdown("""
+        typ = "Classification" if model_key != "blood_cancer" else "Image Classification"
+        st.markdown(f"""
         <div style='background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
                     padding: 15px; border-radius: 8px; text-align: center; color: white;'>
             <strong>📊 Type</strong><br>
-            <span style='font-size: 16px;'>Classification</span>
+            <span style='font-size: 16px;'>{typ}</span>
         </div>
         """, unsafe_allow_html=True)
     
@@ -233,7 +242,7 @@ def show():
             </div>
             """, unsafe_allow_html=True)
             
-        else:
+        elif model_key == "heart":
             # ===== HEART DISEASE MODEL DETAILS =====
             st.markdown("""
             <div class="model-info-box">
@@ -250,11 +259,53 @@ def show():
                 </div>
             </div>
             """, unsafe_allow_html=True)
+        else:
+            # ===== BLOOD CANCER MODEL DETAILS =====
+            st.markdown("""
+            <div class="model-info-box">
+                <div class="model-info-title">🩸 Why ResNet-18 for Blood Cancer Detection?</div>
+                <div class="model-info-content">
+                <strong>ResNet-18 was selected for the following reasons:</strong><br><br>
+                ✅ <strong>Deep Residual Learning:</strong> Skip connections prevent the vanishing gradient problem, allowing the network to learn incredibly complex patterns from cell images.<br><br>
+                ✅ <strong>Pre-trained on ImageNet:</strong> Leverages transfer learning. The model already knows how to detect edges, textures, and shapes from millions of images before even seeing a blood cell.<br><br>
+                ✅ <strong>High Accuracy on Image Data:</strong> CNNs (Convolutional Neural Networks) are the gold standard for computer vision and medical image analysis.<br><br>
+                ✅ <strong>Efficiency:</strong> ResNet-18 is lightweight enough to be trained rapidly on a CPU while retaining state-of-the-art predictive power.<br><br>
+                ✅ <strong>Spatial Hierarchies:</strong> Automatically identifies microscopic anomalies like chromatin clumping or irregular cytoplasm borders without manual feature engineering.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
     
         # ── SECTION 2: DATASET INFORMATION ─────────────────────────────────
         st.markdown("<h2 style='color: #63b3ed;'>📊 Dataset Details & Characteristics</h2>", unsafe_allow_html=True)
         
-        dataset = load_dataset_csv(model_key)
+        if model_key == "blood_cancer":
+            st.markdown("##### 🖼️ Image Dataset Characteristics")
+            
+            # Load dynamic values if metrics.json exists
+            metrics_path = os.path.join(BASE_DIR, "models", "blood cancer_model", "metrics.json")
+            train_count = 10661
+            val_count = 1867
+            img_size = "128x128"
+            
+            if os.path.exists(metrics_path):
+                try:
+                    with open(metrics_path, 'r') as f:
+                        bc_data = json.load(f)
+                    train_count = bc_data.get("training_images", train_count)
+                    val_count = bc_data.get("validation_images", val_count)
+                    size = bc_data.get("image_size", 128)
+                    img_size = f"{size}x{size}"
+                except:
+                    pass
+                    
+            col1, col2, col3, col4 = st.columns(4)
+            with col1: st.markdown(f"<div class='metric-box'><div class='metric-value'>{train_count:,}</div><div class='metric-title'>Training Images</div></div>", unsafe_allow_html=True)
+            with col2: st.markdown(f"<div class='metric-box'><div class='metric-value'>{val_count:,}</div><div class='metric-title'>Validation Images</div></div>", unsafe_allow_html=True)
+            with col3: st.markdown(f"<div class='metric-box'><div class='metric-value'>{img_size}</div><div class='metric-title'>Image Resolution</div></div>", unsafe_allow_html=True)
+            with col4: st.markdown("<div class='metric-box'><div class='metric-value'>2</div><div class='metric-title'>Classes (ALL/HEM)</div></div>", unsafe_allow_html=True)
+            dataset = None
+        else:
+            dataset = load_dataset_csv(model_key)
         
         if dataset is not None:
             # Dataset Overview Metrics
@@ -334,7 +385,7 @@ def show():
                 </div>
             </div>
             """, unsafe_allow_html=True)
-        else:
+        elif model_key == "heart":
             st.markdown("""
             <div class="model-info-box">
                 <div class="model-info-title">🔔 Important Limitations to Consider</div>
@@ -347,6 +398,19 @@ def show():
                 <strong>6. Socioeconomic Factors:</strong> Model cannot capture healthcare access or quality differences<br><br>
                 <strong>7. Edge Cases:</strong> May struggle with extremely rare presentations or combinations<br><br>
                 <strong>✅ Best Practices:</strong> Use for risk stratification, not final diagnosis. Always consult cardiologists
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div class="model-info-box">
+                <div class="model-info-title">🔔 Important Limitations to Consider</div>
+                <div class="model-info-content">
+                <strong>1. Image Quality Dependent:</strong> Predictions heavily rely on the quality, stain, and lighting of the uploaded microscopic image.<br><br>
+                <strong>2. Cropping Artifacts:</strong> The model was trained on specifically cropped single-cell images (C-NMC dataset). Uploading a full slide will yield inaccurate results.<br><br>
+                <strong>3. False Negatives:</strong> Difficult or uncommon cell morphologies may be missed by the model.<br><br>
+                <strong>4. Limited Scope:</strong> The model only distinguishes between ALL (Acute Lymphoblastic Leukemia) and normal HEM cells, ignoring other leukemias.<br><br>
+                <strong>✅ Best Practices:</strong> Never use as a standalone diagnostic tool. Hematologists should always review flagged cells under a microscope.
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -365,31 +429,33 @@ def show():
         )
 
         # ── LOAD METRICS FILE ──────────────────────────────────────────────
-        metrics_path = os.path.join(BASE_DIR, "utils", "metrics.json")
-        all_metrics = load_metrics(metrics_path)
-        metrics = all_metrics.get(model_key, {}) if all_metrics else None
+        if model_key == "blood_cancer":
+            metrics_path = os.path.join(BASE_DIR, "models", "blood cancer_model", "metrics.json")
+            if os.path.exists(metrics_path):
+                with open(metrics_path, 'r') as f:
+                    bc_data = json.load(f)
+                metrics = {
+                    "accuracy": bc_data.get("test_accuracy", 0),
+                    "precision": bc_data.get("precision", 0),
+                    "recall": bc_data.get("recall", 0),
+                    "f1_score": bc_data.get("f1_score", 0),
+                    "auc": bc_data.get("auc", 0)
+                }
+            else:
+                metrics = None
+        else:
+            metrics_path = os.path.join(BASE_DIR, "utils", "metrics.json")
+            all_metrics = load_metrics(metrics_path)
+            metrics = all_metrics.get(model_key, {}) if all_metrics else None
 
         # ── DISPLAY METRICS ────────────────────────────────────────────────
         if metrics:
 
-            # ===== DIABETES MODEL =====
-            if model_key == "diabetes":
-
-                accuracy = metrics.get("accuracy", 0)
-                precision = metrics.get("precision", 0)
-                recall = metrics.get("recall", 0)
-                f1_score = metrics.get("f1_score", 0)
-                auc_score = metrics.get("auc", 0)
-
-            # ===== HEART DISEASE MODEL =====
-            else:
-
-                # Heart Metrics loaded dynamically
-                accuracy = metrics.get("accuracy", 0)
-                precision = metrics.get("precision", 0)
-                recall = metrics.get("recall", 0)
-                f1_score = metrics.get("f1_score", 0)
-                auc_score = metrics.get("auc", 0)
+            accuracy = metrics.get("accuracy", 0)
+            precision = metrics.get("precision", 0)
+            recall = metrics.get("recall", 0)
+            f1_score = metrics.get("f1_score", 0)
+            auc_score = metrics.get("auc", 0)
 
             # ── METRIC CARDS ───────────────────────────────────────────────
             col1, col2, col3, col4, col5 = st.columns(5)
@@ -504,7 +570,7 @@ def show():
             else:
                 st.markdown("<div style='height: 300px; background-color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;'>[ Image Placeholder ]</div>", unsafe_allow_html=True)
         
-        else:
+        elif model_key == "heart":
             st.markdown("##### ❤️ Heart Disease Model Visualization Suite")
             
             col1, col2 = st.columns(2)
@@ -535,6 +601,28 @@ def show():
                 st.image(os.path.join(BASE_DIR, feature_importance_path), use_container_width=True)
             else:
                 st.markdown("<div style='height: 300px; background-color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;'>[ Image Placeholder ]</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("##### 🩸 Blood Cancer Model Visualization Suite")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**📈 Training Loss Curve**")
+                st.write("Shows how the model learned over time. Lower is better.")
+                loss_path = "models/blood cancer_model/loss_curve.png"
+                if os.path.exists(os.path.join(BASE_DIR, loss_path)):
+                    st.image(os.path.join(BASE_DIR, loss_path), use_container_width=True)
+                else:
+                    st.markdown("<div style='height: 300px; background-color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;'>[ Training Model... ]</div>", unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown("**🎯 Confusion Matrix**")
+                st.write("Shows True Positives, True Negatives, False Positives, and False Negatives")
+                cm_path = "models/blood cancer_model/confusion_matrix.png"
+                if os.path.exists(os.path.join(BASE_DIR, cm_path)):
+                    st.image(os.path.join(BASE_DIR, cm_path), use_container_width=True)
+                else:
+                    st.markdown("<div style='height: 300px; background-color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;'>[ Training Model... ]</div>", unsafe_allow_html=True)
         
         st.markdown("---")
         
@@ -556,7 +644,7 @@ def show():
                 </div>
             </div>
             """, unsafe_allow_html=True)
-        else:
+        elif model_key == "heart":
             st.markdown("""
             <div class="model-info-box">
                 <div class="model-info-title">📊 Model Insights from Heart Disease Data</div>
@@ -566,6 +654,19 @@ def show():
                 ✅ <strong>Chest Pain Type Patterns:</strong> Specific pain types show strong correlation<br><br>
                 ✅ <strong>Smoking + Cholesterol:</strong> Dangerous combination identified by model<br><br>
                 ✅ <strong>Non-linear Risk Escalation:</strong> Risk doesn't increase linearly - threshold effects detected
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div class="model-info-box">
+                <div class="model-info-title">📊 Model Insights from Blood Cancer Images</div>
+                <div class="model-info-content">
+                ✅ <strong>Cell Morphology:</strong> Model strongly identifies chromatin clumping and irregular nuclear shapes.<br><br>
+                ✅ <strong>Cytoplasm Ratio:</strong> High nucleus-to-cytoplasm ratio is a key indicator of ALL.<br><br>
+                ✅ <strong>Deep Features:</strong> ResNet-18 learned hierarchical spatial patterns that are invisible to the naked eye.<br><br>
+                ✅ <strong>Color Invariance:</strong> The model has generalized across slight variations in staining colors due to data augmentation.<br><br>
+                ✅ <strong>High Confidence:</strong> True positives are usually detected with high confidence due to residual connections.
                 </div>
             </div>
             """, unsafe_allow_html=True)

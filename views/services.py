@@ -2,6 +2,8 @@ import streamlit as st
 from llm_model.gemini_service import ask_gemini
 import views.diabetes_ui as diabetes_ui
 import views.heart_ui as heart_ui
+import importlib
+blood_cancer_ui = importlib.import_module("views.blood cancer_ui")
 
 def show():
     # ── Styling and Aesthetics ──────────────────────────────────────────────
@@ -216,7 +218,7 @@ def show():
         "💬 General Health Assessment",
         "🧠 Diabetes Prediction",
         "❤️ Heart Disease Prediction",
-        "🎗️ Breast Cancer Detection",
+        "🩸 Blood Cancer Detection",
     ]
     selected_model = st.sidebar.selectbox("Select a service:", model_options)
 
@@ -263,20 +265,5 @@ def show():
     elif "Heart Disease" in selected_model:
         heart_ui.show_ui()
 
-    elif "Breast Cancer" in selected_model:
-        st.markdown("""
-        <div class="coming-soon-card">
-            <span class="cs-icon">🎗️</span>
-            <div class="cs-title">Breast Cancer Detection</div>
-            <div class="cs-status">Model Ready · Integration Pending</div>
-            <div class="cs-desc">
-                A CNN-based deep learning model trained to detect breast cancer from medical images.
-                The model is ready — full UI integration with image upload is coming shortly.
-            </div>
-            <div class="cs-features">
-                <span class="cs-feat-tag">CNN</span>
-                <span class="cs-feat-tag">Image Classification</span>
-                <span class="cs-feat-tag">Deep Learning</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    elif "Blood Cancer" in selected_model:
+        blood_cancer_ui.show_ui()

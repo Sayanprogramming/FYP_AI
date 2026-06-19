@@ -88,10 +88,38 @@ def show_ui():
         res_display = st.session_state["diabetes_result"]
         prob = res_display["probability"]
         pred = res_display["prediction"]
+        
         if pred == 1:
-            st.error(f"High risk of diabetes detected! (Probability: {prob:.2f})")
+            st.error("High risk of diabetes detected!")
         else:
-            st.success(f"Low risk of diabetes detected. (Probability: {prob:.2f})")
+            st.success("Low risk of diabetes detected.")
+            
+        # Statistical Risk Assessment UI
+        st.markdown("### 📊 Risk Assessment")
+        
+        disease_prob = prob
+        if disease_prob > 0.7:
+            risk_level = "High Risk"
+            color = "#ef4444"  # red
+        elif disease_prob > 0.4:
+            risk_level = "Moderate Risk"
+            color = "#f59e0b"  # orange
+        else:
+            risk_level = "Low Risk"
+            color = "#10b981"  # green
+            
+        st.markdown(f"""
+        <div style="background-color: #1e1e1e; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid {color};">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 18px; font-weight: bold; color: white;">Disease Probability</span>
+                <span style="font-size: 24px; font-weight: bold; color: {color};">{disease_prob * 100:.1f}% ({risk_level})</span>
+            </div>
+            <div style="width: 100%; background-color: #333; border-radius: 5px; height: 12px;">
+                <div style="width: {disease_prob * 100}%; background-color: {color}; height: 12px; border-radius: 5px;"></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
         st.markdown("### 🩺 Model Response")
         st.write(res_display["model_res"])
 
