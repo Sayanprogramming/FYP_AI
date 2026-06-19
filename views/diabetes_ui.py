@@ -81,17 +81,19 @@ def show_ui():
                     "model_res": model_res,
                 }
 
-            prediction, probability = response
-
-            if prediction == 1:
-                st.error(f"High risk of diabetes detected! (Probability: {probability:.2f})")
-            else:
-                st.success(f"Low risk of diabetes detected. (Probability: {probability:.2f})")
-
             st.toast("Prediction completed!")
 
-            st.markdown("### 🩺 Model Response")
-            st.write(model_res)
+    # ── Show results from session state (persists after download_button re-run) ──
+    if "diabetes_result" in st.session_state and "prediction" in st.session_state["diabetes_result"]:
+        res_display = st.session_state["diabetes_result"]
+        prob = res_display["probability"]
+        pred = res_display["prediction"]
+        if pred == 1:
+            st.error(f"High risk of diabetes detected! (Probability: {prob:.2f})")
+        else:
+            st.success(f"Low risk of diabetes detected. (Probability: {prob:.2f})")
+        st.markdown("### 🩺 Model Response")
+        st.write(res_display["model_res"])
 
     # ── Prescription Section (shown after prediction) ──────────────────────────
     if "diabetes_result" in st.session_state:
@@ -117,6 +119,7 @@ def show_ui():
                 file_name=f"Prescription_Diabetes_{res['name'].replace(' ', '_')}.pdf",
                 mime="application/pdf",
                 use_container_width=True,
+                key="diabetes_download_btn",
             )
 
         # ── Email Button ─────────────────────────────────────────────────────
