@@ -10,7 +10,7 @@ from controllers.blood_cancer_services import predict_from_image, is_model_avail
 print("Model available:", is_model_available())
 
 # Point to the test_samples directory
-test_samples_dir = r"c:\Users\sayan\Desktop\Final_Prj\test_samples"
+test_samples_dir = r"c:\Users\sayan\Desktop\Final_Prj\models\blood cancer_model\test_samples"
 
 test_files = [
     ("cancerous_1.bmp", "ALL (Cancerous)"),

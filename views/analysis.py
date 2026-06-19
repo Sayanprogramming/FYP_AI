@@ -604,25 +604,16 @@ def show():
         else:
             st.markdown("##### 🩸 Blood Cancer Model Visualization Suite")
             
-            col1, col2 = st.columns(2)
+            st.markdown("**🎯 Confusion Matrix**")
+            st.write("Shows True Positives, True Negatives, False Positives, and False Negatives")
             
-            with col1:
-                st.markdown("**📈 Training Loss Curve**")
-                st.write("Shows how the model learned over time. Lower is better.")
-                loss_path = "models/blood cancer_model/loss_curve.png"
-                if os.path.exists(os.path.join(BASE_DIR, loss_path)):
-                    st.image(os.path.join(BASE_DIR, loss_path), use_container_width=True)
-                else:
-                    st.markdown("<div style='height: 300px; background-color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;'>[ Training Model... ]</div>", unsafe_allow_html=True)
-            
-            with col2:
-                st.markdown("**🎯 Confusion Matrix**")
-                st.write("Shows True Positives, True Negatives, False Positives, and False Negatives")
-                cm_path = "models/blood cancer_model/confusion_matrix.png"
-                if os.path.exists(os.path.join(BASE_DIR, cm_path)):
+            cm_path = "utils/blood_cancer_confusion.png"
+            if os.path.exists(os.path.join(BASE_DIR, cm_path)):
+                col_space_left, col_content, col_space_right = st.columns([1, 5, 1])
+                with col_content:
                     st.image(os.path.join(BASE_DIR, cm_path), use_container_width=True)
-                else:
-                    st.markdown("<div style='height: 300px; background-color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;'>[ Training Model... ]</div>", unsafe_allow_html=True)
+            else:
+                st.markdown("<div style='height: 300px; background-color: black; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;'>[ Training Model... ]</div>", unsafe_allow_html=True)
         
         st.markdown("---")
         

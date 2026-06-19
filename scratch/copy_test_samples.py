@@ -10,7 +10,7 @@ from controllers.blood_cancer_services import predict_from_image
 
 val_images_dir = r"c:\Users\sayan\Desktop\Final_Prj\models\blood cancer_model\dataset\val\images"
 val_labels_csv = r"c:\Users\sayan\Desktop\Final_Prj\models\blood cancer_model\dataset\val\labels.csv"
-dest_dir = r"c:\Users\sayan\Desktop\Final_Prj\test_samples"
+dest_dir = r"c:\Users\sayan\Desktop\Final_Prj\models\blood cancer_model\test_samples"
 
 os.makedirs(dest_dir, exist_ok=True)
 

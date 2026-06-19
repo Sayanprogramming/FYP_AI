@@ -76,7 +76,7 @@ def show_ui():
         selected_test_image = None
         image_bytes = None
 
-        test_samples_dir = os.path.join(BASE_DIR, "test_samples")
+        test_samples_dir = os.path.join(BASE_DIR, "models", "blood cancer_model", "test_samples")
         if os.path.exists(test_samples_dir):
             sample_files = [f for f in os.listdir(test_samples_dir) if f.lower().endswith(('.bmp', '.png', '.jpg', '.jpeg'))]
             if sample_files:
@@ -101,13 +101,6 @@ def show_ui():
                     image_bytes = f.read()
             except Exception as e:
                 st.error(f"Error loading cell image: {e}")
-
-        # Additional symptoms
-        symptoms = st.text_area(
-            "Clinical Notes / Symptoms (optional)",
-            placeholder="E.g. fatigue, frequent infections, easy bruising, pale skin...",
-            key="blood_cancer_symptoms",
-        )
 
         submit_button = st.form_submit_button("🔬 Analyze Cell Image")
 
@@ -140,7 +133,7 @@ def show_ui():
                 )
 
                 model_res = model_service.ask_model(
-                    name, age, "Blood Cancer (Leukemia)", format_prompt, symptoms or "Not provided"
+                    name, age, "Blood Cancer (Leukemia)", format_prompt, "Not provided"
                 )
 
                 # Store results in session state
