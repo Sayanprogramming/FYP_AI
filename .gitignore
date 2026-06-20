@@ -8,4 +8,3 @@ controllers/__pycache__/
 
 # Blood cancer model - large files
 models/blood cancer_model/dataset/
-models/blood cancer_model/*.pth
