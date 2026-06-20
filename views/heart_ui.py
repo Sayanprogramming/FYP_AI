@@ -84,7 +84,7 @@ def show_ui():
 
                 format_prompt = (
                     f"The patient has a {'high' if response[0] == 1 else 'low'} "
-                    f"risk of heart disease with a probability of {response[1]:.2f}."
+                    f"risk of heart disease with a probability of {response[1]:.2%}."
                 )
                 model_res = model_service.ask_model(name, age, "heart disease", format_prompt, symptoms)
 

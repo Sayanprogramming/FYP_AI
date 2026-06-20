@@ -16,6 +16,9 @@ def _clean_markdown(text: str) -> str:
     Removes **, *, #, backticks, and other Markdown syntax while keeping
     meaningful punctuation and structure.
     """
+    # Replace special unicode punctuation with ASCII equivalents
+    text = text.replace("—", "-").replace("–", "-").replace("’", "'").replace("‘", "'").replace('“', '"').replace('”', '"')
+    
     # Remove horizontal rules
     text = re.sub(r"^[-*_]{3,}\s*$", "", text, flags=re.MULTILINE)
     # Headers → keep text, remove # symbols
@@ -51,12 +54,13 @@ def _safe(text: str) -> str:
 #  Colour palette
 # ─────────────────────────────────────────────────────────────────────────────
 
-PRIMARY   = (22,  82, 178)   # rich blue
-ACCENT    = (235, 87,  87)   # soft red
-LIGHT_BG  = (237, 244, 255)  # very light blue tint
-WHITE     = (255, 255, 255)
-DARK_TEXT = (30,  30,  40)
-MID_GREY  = (120, 120, 140)
+PRIMARY      = (26,  54,  93)   # deep slate navy
+ACCENT       = (229, 62,  62)   # clinical crimson/red
+LIGHT_BG     = (247, 250, 252)  # off-white / light slate tint
+WHITE        = (255, 255, 255)
+DARK_TEXT    = (45,  55,  72)   # charcoal gray for high readability
+MID_GREY     = (113, 128, 150)  # cool grey for subtitles/secondary text
+BORDER_COLOR = (226, 232, 240)  # border grey
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -72,106 +76,147 @@ class PrescriptionPDF(FPDF):
 
     # ── Header ────────────────────────────────────────────────────────────────
     def header(self):
-        # Full-width banner
+        # Top primary color accent band (full width)
         self.set_fill_color(*PRIMARY)
-        self.rect(0, 0, 210, 36, "F")
+        self.rect(0, 0, 210, 4, "F")
 
-        # Thin accent stripe at bottom of banner
-        self.set_fill_color(*ACCENT)
-        self.rect(0, 33, 210, 3, "F")
+        # Clinic Branding / Logo (Left)
+        self.set_text_color(*PRIMARY)
+        self.set_font("Arial", "B", 18)
+        self.set_xy(15, 10)
+        self.cell(100, 8, "HealthForge AI", ln=0)
 
-        # App name (left)
-        self.set_text_color(*WHITE)
-        self.set_font("Arial", "B", 17)
-        self.set_xy(12, 8)
-        self.cell(120, 9, "AI Health Prescription", ln=0)
+        # Tagline / Decscription
+        self.set_text_color(*MID_GREY)
+        self.set_font("Arial", "I", 8.5)
+        self.set_xy(15, 18)
+        self.cell(100, 5, "Clinical Intelligence & Decision Support", ln=0)
 
-        # Disease badge (right)
-        self.set_font("Arial", "B", 10)
-        self.set_xy(148, 6)
-        self.set_fill_color(*ACCENT)
-        self.cell(52, 8, f"  {self._disease.upper()}  ", border=0, fill=True, align="C")
+        # Disease assessment badge / metadata (Right)
+        self.set_font("Arial", "B", 9.5)
+        self.set_xy(135, 10)
+        self.set_text_color(*PRIMARY)
+        self.cell(60, 7, f"{self._disease.upper()}", border="B", ln=0, align="R")
 
-        # Date (right, second line)
-        self.set_font("Arial", "", 9)
-        self.set_xy(148, 16)
-        self.set_fill_color(*PRIMARY)
+        # Assessment Date
+        self.set_font("Arial", "", 8.5)
+        self.set_text_color(*MID_GREY)
+        self.set_xy(135, 18)
         today = datetime.today().strftime("%d %b %Y")
-        self.cell(52, 7, f"Date: {today}", align="C")
+        self.cell(60, 5, f"Date: {today}", ln=0, align="R")
 
+        # Divider line separating header from patient info
+        self.set_draw_color(*BORDER_COLOR)
+        self.set_line_width(0.4)
+        self.line(15, 27, 195, 27)
+
+        # Reset text color and explicitly set Y cursor for body content
         self.set_text_color(*DARK_TEXT)
-        self.ln(16)   # space after header
+        self.set_y(38)
 
     # ── Footer ─────────────────────────────────────────────────────────────────
     def footer(self):
-        self.set_y(-16)
-        self.set_draw_color(*PRIMARY)
-        self.set_line_width(0.4)
-        self.line(10, self.get_y(), 200, self.get_y())
-        self.ln(1)
+        self.set_y(-18)
+        self.set_draw_color(*BORDER_COLOR)
+        self.set_line_width(0.3)
+        self.line(15, self.get_y(), 195, self.get_y())
+        self.ln(2)
+        
+        # Clinical disclaimer
         self.set_font("Arial", "I", 7.5)
         self.set_text_color(*MID_GREY)
-        self.cell(
-            0, 6,
-            _safe("DISCLAIMER: This is AI-generated guidance only — NOT a substitute for professional medical diagnosis. "
-            "Always consult a qualified doctor."),
-            align="C",
-        )
+        disclaimer = "DISCLAIMER: This is an AI-generated clinical decision support summary from HealthForge AI — NOT a substitute for professional medical diagnosis, advice, or treatment. Always consult a qualified physician."
+        self.set_x(15)
+        self.multi_cell(180, 4, _safe(disclaimer), align="C")
         self.set_text_color(*DARK_TEXT)
 
     # ── Helpers ────────────────────────────────────────────────────────────────
     def section_title(self, title: str):
         """Styled section heading with left accent bar."""
         self.set_fill_color(*PRIMARY)
-        self.rect(10, self.get_y(), 3, 7, "F")
-        self.set_xy(15, self.get_y())
+        self.rect(15, self.get_y(), 3, 6, "F")
+        self.set_xy(20, self.get_y() - 0.5)
         self.set_font("Arial", "B", 11)
         self.set_text_color(*PRIMARY)
         self.cell(0, 7, _safe(title), ln=True)
         self.set_text_color(*DARK_TEXT)
-        self.ln(1)
+        self.ln(2)
 
     def info_card(self, rows: list[tuple[str, str]]):
         """Render a shaded info card with key-value rows."""
-        card_h = len(rows) * 7 + 6
-        self.set_fill_color(*LIGHT_BG)
-        self.set_draw_color(*PRIMARY)
-        self.set_line_width(0.3)
-        self.rect(10, self.get_y(), 190, card_h, "DF")
+        card_w = 180
+        row_height = 7
+        card_h = len(rows) * row_height + 6
+        start_y = self.get_y()
 
-        start_y = self.get_y() + 3
+        # Background card fill
+        self.set_fill_color(*LIGHT_BG)
+        self.set_draw_color(*BORDER_COLOR)
+        self.set_line_width(0.3)
+        self.rect(15, start_y, card_w, card_h, "DF")
+
+        # Accent border on the left
+        self.set_fill_color(*PRIMARY)
+        self.rect(15, start_y, 1.5, card_h, "F")
+
+        # Write the row key-values
         for i, (key, val) in enumerate(rows):
-            self.set_xy(14, start_y + i * 7)
+            row_y = start_y + 3 + i * row_height
+            self.set_xy(20, row_y)
             self.set_font("Arial", "B", 9.5)
             self.set_text_color(*PRIMARY)
-            self.cell(42, 6, _safe(key))
+            self.cell(45, 6, _safe(key))
             self.set_font("Arial", "", 9.5)
             self.set_text_color(*DARK_TEXT)
             self.cell(0, 6, _safe(val), ln=False)
-        self.ln(card_h + 2)
+
+        # Set cursor Y below the card
+        self.set_xy(15, start_y + card_h + 4)
 
     def prediction_badge(self, summary: str, is_high_risk: bool):
         """Coloured prediction result banner."""
-        fill = (255, 235, 235) if is_high_risk else (230, 255, 240)
-        border = ACCENT if is_high_risk else (34, 170, 90)
-        label = "[!] HIGH RISK" if is_high_risk else "[OK] LOW RISK"
+        if is_high_risk:
+            bg_color = (254, 242, 242)     # light red tint
+            accent_color = (220, 38, 38)   # clinical crimson
+            label = "CLINICAL RISK ASSESSMENT: HIGH RISK / ABNORMAL FINDINGS"
+        else:
+            bg_color = (240, 253, 244)     # light green tint
+            accent_color = (22, 101, 52)   # professional forest green
+            label = "CLINICAL RISK ASSESSMENT: LOW RISK / NORMAL FINDINGS"
 
-        self.set_fill_color(*fill)
-        self.set_draw_color(*border)
-        self.set_line_width(0.5)
-        self.rect(10, self.get_y(), 190, 22, "DF")
+        # Safely clean and wrap summary text
+        clean_summary = _clean_markdown(summary)
+        chars_per_line = 95
+        num_lines = max(1, (len(clean_summary) // chars_per_line) + 1)
+        
+        card_w = 180
+        card_h = 12 + (num_lines * 5) + 4
+        start_y = self.get_y()
 
-        self.set_xy(14, self.get_y() + 3)
-        self.set_font("Arial", "B", 11)
-        self.set_text_color(*border)
-        self.cell(0, 6, _safe(label), ln=True)
+        # Shaded background card
+        self.set_fill_color(*bg_color)
+        self.set_draw_color(*BORDER_COLOR)
+        self.set_line_width(0.3)
+        self.rect(15, start_y, card_w, card_h, "DF")
 
-        self.set_x(14)
+        # Bold left status strip (4mm wide)
+        self.set_fill_color(*accent_color)
+        self.rect(15, start_y, 4, card_h, "F")
+
+        # 1. Assessment Category Label
+        self.set_xy(23, start_y + 3.5)
+        self.set_font("Arial", "B", 10.5)
+        self.set_text_color(*accent_color)
+        self.cell(0, 6, _safe(label), ln=False)
+
+        # 2. Detailed Summary Text
+        self.set_xy(23, start_y + 10.5)
         self.set_font("Arial", "", 9)
         self.set_text_color(*DARK_TEXT)
-        short = summary if len(summary) <= 100 else summary[:97] + "..."
-        self.cell(0, 6, _safe(short), ln=True)
-        self.ln(4)
+        self.multi_cell(165, 5, _safe(clean_summary))
+        
+        # Set cursor Y below the card
+        self.set_xy(15, start_y + card_h + 4)
 
     def body_text(self, text: str):
         """Render multi-line plain body text with smart bullet handling."""
@@ -187,19 +232,20 @@ class PrescriptionPDF(FPDF):
 
             # Section-like lines (ALL CAPS or ends with ':') → mini heading
             if (stripped.endswith(":") and len(stripped) < 60) or stripped.isupper():
+                self.ln(2)
                 self.set_font("Arial", "B", 10)
                 self.set_text_color(*PRIMARY)
-                self.set_x(10)
-                self.multi_cell(190, 6, _safe(stripped))
+                self.set_x(15)
+                self.multi_cell(180, 6, _safe(stripped))
                 self.set_font("Arial", "", 10)
                 self.set_text_color(*DARK_TEXT)
             elif stripped.startswith("•"):
-                self.set_x(14)
-                self.cell(5, 6, "-")
-                self.multi_cell(181, 6, _safe(stripped[1:].strip()))
+                self.set_x(19)
+                self.cell(5, 6, chr(149))
+                self.multi_cell(175, 6, _safe(stripped[1:].strip()))
             else:
-                self.set_x(10)
-                self.multi_cell(190, 6, _safe(stripped))
+                self.set_x(15)
+                self.multi_cell(180, 6, _safe(stripped))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -221,6 +267,7 @@ def generate_pdf_bytes(
     clean_text = _clean_markdown(prescription_text)
 
     pdf = PrescriptionPDF(patient_name=patient_name, disease=disease)
+    pdf.set_margins(15, 38, 15)  # Set consistent margins
     pdf.set_auto_page_break(auto=True, margin=20)
     pdf.add_page()
 
@@ -264,15 +311,15 @@ def send_prescription_email(
     )
 
     msg = EmailMessage()
-    msg["Subject"] = f"Your AI Health Prescription – {disease.title()}"
+    msg["Subject"] = f"Your HealthForge AI Report – {disease.title()}"
     msg["From"]    = sender_email
     msg["To"]      = recipient_email
     msg.set_content(
         f"Hello {patient_name},\n\n"
-        f"Please find your AI-generated health prescription for {disease.title()} "
+        f"Please find your HealthForge AI health recommendation report for {disease.title()} "
         "attached as a PDF.\n\n"
-        "⚠  This is AI-generated guidance only. Always consult a qualified doctor.\n\n"
-        "Regards,\nAI Health Recommendation System"
+        "⚠  This is AI-generated guidance only. Always consult a qualified physician.\n\n"
+        "Regards,\nHealthForge AI Team"
     )
     msg.add_attachment(
         pdf_bytes,

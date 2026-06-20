@@ -68,7 +68,7 @@ def show_ui():
 
                 response = diabetes_services.predict_disease(user_input_df)
                 
-                format_prompt = f"The patient has a {'high' if response[0] == 1 else 'low'} risk of diabetes with a probability of {response[1]:.2f}."
+                format_prompt = f"The patient has a {'high' if response[0] == 1 else 'low'} risk of diabetes with a probability of {response[1]:.2%}."
                 model_res = model_service.ask_model(name, age, "diabetes", format_prompt, symptoms)
 
                 # Store results in session state so prescription section can access them
